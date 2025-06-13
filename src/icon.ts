@@ -1,7 +1,7 @@
-import { deepClone, isObjectLike } from './helpers';
 import { ColorsMap, IconProperties, LottieData, LottieProperty } from './interfaces';
 import { extractLottieProperties, hexToTupleColor, updateLottieProperties } from './lottie';
 import { parseColor, parseState, parseStroke } from './parsers';
+import { deepClone, isObjectLike } from './utils';
 
 function findObject(currentData: any, key: string) {
     const result: any[] = [];

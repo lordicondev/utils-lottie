@@ -1,6 +1,6 @@
-import { set } from "./helpers";
-import { LottieAnimation, LottieProperty, RGBColor, LottieData, RGBTuple, LottiePropertyType } from "./interfaces";
+import { LottieAnimation, LottieData, LottieProperty, LottiePropertyType, RGBColor, RGBTuple } from "./interfaces";
 import { parseColor } from "./parsers";
+import { set } from "./utils";
 
 /**
  * Convert to hexadecimal value.
