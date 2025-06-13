@@ -6,7 +6,7 @@ export type LottieData = any;
 /**
  * AnimationItem from `@lordicon/internal`.
  */
-export type LottieAnimation = any;
+export type LottieAnimationInstance = any;
 
 /**
  * Supported property types.
@@ -53,7 +53,7 @@ export interface RGBColor {
  * }
  * ```
  */
-export interface ColorsMap {
+export interface ColorMap {
     [key: string]: string;
 }
 
@@ -79,7 +79,7 @@ export interface IconProperties {
     /**
      * Colors.
      */
-    colors?: ColorsMap;
+    colors?: ColorMap;
 
     /**
      * Stroke.

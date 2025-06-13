@@ -1,4 +1,4 @@
-import { LottieAnimation, LottieData, LottieProperty, LottiePropertyType, RGBColor, RGBTuple } from "./interfaces";
+import { LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RGBColor, RGBTuple } from "./interfaces";
 import { parseColor } from "./parsers";
 import { set } from "./utils";
 
@@ -159,7 +159,7 @@ export function extractLottieProperties(
  * @param properties Array of properties to reset.
  */
 export function resetLottieProperties(
-    data: LottieData | LottieAnimation,
+    data: LottieData | LottieAnimationInstance,
     properties: LottieProperty[],
 ) {
     for (const property of properties) {
@@ -174,7 +174,7 @@ export function resetLottieProperties(
  * @param value New value to set.
  */
 export function updateLottieProperties(
-    data: LottieData | LottieAnimation,
+    data: LottieData | LottieAnimationInstance,
     properties: LottieProperty[],
     value: any,
 ) {

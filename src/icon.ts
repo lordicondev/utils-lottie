@@ -1,4 +1,4 @@
-import { ColorsMap, IconProperties, LottieData, LottieProperty } from './interfaces';
+import { ColorMap, IconProperties, LottieData, LottieProperty } from './interfaces';
 import { extractLottieProperties, hexToTupleColor, updateLottieProperties } from './lottie';
 import { parseColor, parseState, parseStroke } from './parsers';
 import { deepClone, isObjectLike } from './utils';
@@ -77,7 +77,7 @@ function assignStroke(data: LottieData, properties: LottieProperty[], value: any
     }
 }
 
-function assignColors(data: LottieData, properties: LottieProperty[], value: ColorsMap) {
+function assignColors(data: LottieData, properties: LottieProperty[], value: ColorMap) {
     for (const colorName of Object.keys(value)) {
         const color = parseColor(value[colorName]);
         const colorObjects = findObject(data, `effect('${colorName}')('Color')`);

@@ -1,4 +1,4 @@
-import { ColorsMap } from './interfaces.js';
+import { ColorMap } from './interfaces.js';
 
 /**
  * List of supported colors.
@@ -182,14 +182,14 @@ export function parseColor(colorName: string): string {
  * @param colors Colors definied in string.
  * @returns Object with colors.
  */
-export function parseColors(colors: string): ColorsMap | undefined {
+export function parseColors(colors: string): ColorMap | undefined {
     if (!colors || typeof colors !== 'string') {
         return undefined;
     }
 
     const list = colors.split(',').filter(c => c).map(c => c.split(':')).filter(c => c.length == 2);
 
-    return list.reduce<ColorsMap>((p, c) => {
+    return list.reduce<ColorMap>((p, c) => {
         const a = c[0];
         p[a.toLowerCase()] = parseColor(c[1]);
         return p;
