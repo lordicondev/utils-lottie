@@ -3,9 +3,9 @@ import { parseColor } from "./parsers";
 import { set } from "./utils";
 
 /**
- * Convert to hexadecimal value.
- * @param c - Color component (0-255).
- * @returns Hexadecimal string representation of the color component.
+ * Converts a color component to a two-digit hexadecimal string.
+ * @param c Color component (0-255).
+ * @returns Two-character hexadecimal string.
  */
 function componentToHex(c: number) {
     const hex = c.toString(16);
@@ -13,27 +13,27 @@ function componentToHex(c: number) {
 }
 
 /**
- * Helper method for scale value.
- * @param n - Number to convert (0-255).
- * @returns Scaled value in the range of 0 to 1, rounded to three decimal places.
+ * Converts a color component from 0-255 range to a normalized value (0-1).
+ * @param Color component (0-255).
+ * @returns Normalized value (0-1), rounded to three decimal places.
  */
 function toUnitVector(n: number) {
     return Math.round((n / 255) * 1000) / 1000;
 }
 
 /**
- * Helper method for scale value.
- * @param n - Number to convert (0-1).
- * @returns Scaled value in the range of 0 to 255.
+ * Converts a normalized color value (0-1) to a color component (0-255).
+ * @param Normalized value (0-1).
+ * @returns Color component (0-255), rounded to the nearest integer.
  */
 function fromUnitVector(n: number) {
     return Math.round(n * 255);
 }
 
 /**
- * Convert from color object to hex value.
- * @param value - Color object containing r, g, b properties.
- * @returns Hexadecimal string representation of the color.
+ * Converts an RGB color object to a hexadecimal color string.
+ * @param value Color object with r, g, b properties.
+ * @returns Hexadecimal color string (e.g., "#ff0000").
  */
 export function rgbToHex(value: RgbColor): string {
     return (
@@ -45,9 +45,9 @@ export function rgbToHex(value: RgbColor): string {
 }
 
 /**
- * Conver from hex to color object.
- * @param hex - Hexadecimal string representation of the color.
- * @returns RGBColor object containing r, g, b properties.
+ * Converts a hexadecimal color string to an RGB color object.
+ * @param hex Hexadecimal color string (with or without "#").
+ * @returns RgbColor object with r, g, b properties.
  */
 export function hexToRgb(hex: string): RgbColor {
     let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
@@ -59,9 +59,9 @@ export function hexToRgb(hex: string): RgbColor {
 }
 
 /**
- * Convert hex color to tuple color representation.
- * @param hex - Hexadecimal string representation of the color.
- * @returns RGBTuple representing the color in the range of 0 to 1.
+ * Converts a hexadecimal color string to an RGB tuple in the 0-1 range.
+ * @param hex Hexadecimal color string.
+ * @returns RgbTuple with values normalized to 0-1.
  */
 export function hexToTupleColor(hex: string): RgbTuple {
     const {
@@ -73,9 +73,9 @@ export function hexToTupleColor(hex: string): RgbTuple {
 }
 
 /**
- * Convert tuple color to hex representation.
- * @param value RGBTuple representing the color in the range of 0 to 1.
- * @returns Hexadecimal string representation of the color.
+ * Converts an RGB tuple (0-1 range) to a hexadecimal color string.
+ * @param value RgbTuple with values in the 0-1 range.
+ * @returns Hexadecimal color string.
  */
 export function tupleColorToHex(value: RgbTuple): string {
     const color: RgbColor = {
@@ -87,10 +87,10 @@ export function tupleColorToHex(value: RgbTuple): string {
 }
 
 /**
- * Return all supported customizable properties.
- * @param data Icon data.
- * @param options Options.
- * @returns Array of LottieProperty objects.
+ * Extracts all supported customizable properties from Lottie data.
+ * @param data Lottie animation data.
+ * @param options Extraction options (e.g., lottieInstance: boolean).
+ * @returns Array of LottieProperty objects describing customizable properties.
  */
 export function extractLottieProperties(
     data: LottieData,
@@ -154,8 +154,8 @@ export function extractLottieProperties(
 }
 
 /**
- * Reset data to default values by indicated properties.
- * @param data Lottie data or animation to reset.
+ * Resets Lottie data or animation instance to default values for the given properties.
+ * @param data Lottie data or animation instance to reset.
  * @param properties Array of properties to reset.
  */
 export function resetLottieProperties(
@@ -168,10 +168,11 @@ export function resetLottieProperties(
 }
 
 /**
- * Update data to value by indicated properties.
- * @param data Lottie data or animation to update.
+ * Updates Lottie data or animation instance with a new value for the given properties.
+ * Handles color, point, and other property types accordingly.
+ * @param data Lottie data or animation instance to update.
  * @param properties Array of properties to update.
- * @param value New value to set.
+ * @param value New value to set for each property.
  */
 export function updateLottieProperties(
     data: LottieData | LottieAnimationInstance,

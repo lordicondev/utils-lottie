@@ -49,10 +49,12 @@ export function has<T>(object: T, path: string | string[]): boolean {
 }
 
 /**
- * Get object value from path. Otherwise return defaultValue.
+ * Retrieves the value at the given path from the object.
+ * Returns defaultValue if the path does not exist.
  * @param object Object to get value from.
- * @param path Path to the value.
- * @param defaultValue Default value to return if not found.
+ * @param path Property path as a dot-separated string or array of keys.
+ * @param defaultValue Value to return if the path does not exist.
+ * @returns Value at the given path or defaultValue.
  */
 export function get<T>(object: T, path: string | string[], defaultValue?: any): any {
     const newPath = Array.isArray(path) ? path : path.split(".");
