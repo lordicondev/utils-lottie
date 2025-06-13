@@ -1,4 +1,4 @@
-import { LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RGBColor, RGBTuple } from "./interfaces";
+import { LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RgbColor, RgbTuple } from "./interfaces";
 import { parseColor } from "./parsers";
 import { set } from "./utils";
 
@@ -35,7 +35,7 @@ function fromUnitVector(n: number) {
  * @param value - Color object containing r, g, b properties.
  * @returns Hexadecimal string representation of the color.
  */
-export function rgbToHex(value: RGBColor): string {
+export function rgbToHex(value: RgbColor): string {
     return (
         '#' +
         componentToHex(value.r) +
@@ -49,7 +49,7 @@ export function rgbToHex(value: RGBColor): string {
  * @param hex - Hexadecimal string representation of the color.
  * @returns RGBColor object containing r, g, b properties.
  */
-export function hexToRgb(hex: string): RGBColor {
+export function hexToRgb(hex: string): RgbColor {
     let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
     return {
         r: (data >> 16) & 255,
@@ -63,7 +63,7 @@ export function hexToRgb(hex: string): RGBColor {
  * @param hex - Hexadecimal string representation of the color.
  * @returns RGBTuple representing the color in the range of 0 to 1.
  */
-export function hexToTupleColor(hex: string): RGBTuple {
+export function hexToTupleColor(hex: string): RgbTuple {
     const {
         r,
         g,
@@ -77,8 +77,8 @@ export function hexToTupleColor(hex: string): RGBTuple {
  * @param value RGBTuple representing the color in the range of 0 to 1.
  * @returns Hexadecimal string representation of the color.
  */
-export function tupleColorToHex(value: RGBTuple): string {
-    const color: RGBColor = {
+export function tupleColorToHex(value: RgbTuple): string {
+    const color: RgbColor = {
         r: fromUnitVector(value[0]),
         g: fromUnitVector(value[1]),
         b: fromUnitVector(value[2]),

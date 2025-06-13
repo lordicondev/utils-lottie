@@ -31,12 +31,12 @@ export type Stroke = 1 | 2 | 3 | 'light' | 'regular' | 'bold';
 /**
  * Type for RGB color in Lottie format.
  */
-export type RGBTuple = [number, number, number];
+export type RgbTuple = [number, number, number];
 
 /**
  * Interface for colors parameters.
  */
-export interface RGBColor {
+export interface RgbColor {
     r: number;
     g: number;
     b: number;
