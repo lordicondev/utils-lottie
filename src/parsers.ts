@@ -148,15 +148,16 @@ const COLORS: any = {
 };
 
 /**
- * Return hex color from name.
- * 
+ * Returns a hexadecimal color string for a given color name or hex code.
+ *
  * Example:
  * ```js
- * parseColor('red'); // #ff0000
+ * parseColor('red'); // "#ff0000"
+ * parseColor('#0f0'); // "#00ff00"
  * ```
- * 
- * @param colorName Color name.
- * @returns Hexadecimal color string.
+ *
+ * @param colorName Color name (e.g., "red") or hex string (e.g., "#ff0000" or "#0f0").
+ * @returns Hexadecimal color string in the format "#rrggbb".
  */
 export function parseColor(colorName: string): string {
     if (colorName.startsWith('#')) {
@@ -172,15 +173,16 @@ export function parseColor(colorName: string): string {
 }
 
 /**
- * Parse colors attribute.
- * 
+ * Parses a colors attribute string into a ColorMap object.
+ *
  * Example:
  * ```js
- * parseColors('primary:red,secondary:#00ff00'); // { primary: '#ff0000', secondary: '#00ff00' }
+ * parseColors('primary:red,secondary:#00ff00');
+ * // Returns: { primary: '#ff0000', secondary: '#00ff00' }
  * ```
- * 
- * @param colors Colors definied in string.
- * @returns Object with colors.
+ *
+ * @param colors Colors defined as a comma-separated string (e.g., "primary:red,secondary:#00ff00").
+ * @returns Object mapping color names to hex strings, or undefined if input is invalid.
  */
 export function parseColors(colors: string): ColorMap | undefined {
     if (!colors || typeof colors !== 'string') {
@@ -197,9 +199,10 @@ export function parseColors(colors: string): ColorMap | undefined {
 }
 
 /**
- * Parse stroke attribute to supported range.
- * @param value Stroke value.
- * @returns Stroke value in the range of 1 to 3, or undefined if not valid.
+ * Parses a stroke attribute value to a supported numeric range.
+ *
+ * @param value Stroke value as a string or number ("light", 1, "1", "regular", 2, "2", "bold", 3, "3").
+ * @returns Stroke value as 1, 2, or 3, or undefined if not valid.
  */
 export function parseStroke(value: string | number): (1 | 2 | 3 | undefined) {
     if (value === 'light' || value === 1 || value === '1') {
