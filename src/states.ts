@@ -1,9 +1,20 @@
-import { IState, IconData } from "./interfaces.js";
+import { IconState, LottieData } from "./interfaces.js";
 
-export function readStates(data: IconData): IState[] {
-    return (data.markers || []).map((c: any) => {
+/**
+ * Read states from lottie data.
+ * @param data Lottie data to read states from.
+ * @returns Array of icon states extracted from the data.
+ */
+export function readStates(
+    data: LottieData,
+): IconState[] {
+    if (!data || !data.markers || !Array.isArray(data.markers)) {
+        return [];
+    }
+
+    return data.markers.map((c: any) => {
         const [partA, partB] = c.cm.split(':');
-        const newState: IState = {
+        const newState: IconState = {
             time: c.tm,
             duration: c.dr,
             name: partB || partA,

@@ -1,6 +1,6 @@
 import { deepClone, isObjectLike } from './helpers';
-import { IColors, ILottieProperty, IProperties, IconData } from './interfaces';
-import { hexToLottieColor, extractProperties, updateProperties } from './lottie';
+import { ColorsMap, IconProperties, LottieData, LottieProperty } from './interfaces';
+import { extractLottieProperties, hexToTupleColor, updateLottieProperties } from './lottie';
 import { parseColor, parseState, parseStroke } from './parsers';
 
 function findObject(currentData: any, key: string) {
@@ -21,7 +21,7 @@ function findObject(currentData: any, key: string) {
     return result;
 }
 
-function assignStroke(data: IconData, properties: ILottieProperty[], value: any) {
+function assignStroke(data: LottieData, properties: LottieProperty[], value: any) {
     const stroke = parseStroke(value);
     if (!stroke) {
         return;
@@ -72,31 +72,31 @@ function assignStroke(data: IconData, properties: ILottieProperty[], value: any)
     // properties
     for (const p of properties) {
         if (p.name === 'stroke' || p.name === 'stroke-layers') {
-            updateProperties(data, [p], stroke);
+            updateLottieProperties(data, [p], stroke);
         }
     }
 }
 
-function assignColors(data: IconData, properties: ILottieProperty[], value: IColors) {
+function assignColors(data: LottieData, properties: LottieProperty[], value: ColorsMap) {
     for (const colorName of Object.keys(value)) {
         const color = parseColor(value[colorName]);
         const colorObjects = findObject(data, `effect('${colorName}')('Color')`);
 
         // layers
         for (const s of colorObjects) {
-            s.k = [...hexToLottieColor(color), 1];
+            s.k = [...hexToTupleColor(color), 1];
         }
 
         // properties
         for (const p of properties) {
             if (p.name === colorName) {
-                updateProperties(data, [p], color);
+                updateLottieProperties(data, [p], color);
             }
         }
     }
 }
 
-function assignState(data: IconData, _properties: ILottieProperty[], value: any) {
+function assignState(data: LottieData, _properties: LottieProperty[], value: any) {
     const state = parseState(value);
     if (!state) {
         return;
@@ -118,7 +118,7 @@ function assignState(data: IconData, _properties: ILottieProperty[], value: any)
     }
 }
 
-function removeOtherAnimations(data: IconData, _properties: ILottieProperty[], value: string) {
+function removeOtherAnimations(data: LottieData, _properties: LottieProperty[], value: string) {
     const state = parseState(value);
     if (!state) {
         return;
@@ -173,7 +173,7 @@ function removeOtherAnimations(data: IconData, _properties: ILottieProperty[], v
     }
 }
 
-function removeOtherStrokes(data: IconData, properties: ILottieProperty[], value: any) {
+function removeOtherStrokes(data: LottieData, properties: LottieProperty[], value: any) {
     const stroke = parseStroke(value);
     if (!stroke) {
         return;
@@ -208,17 +208,17 @@ function removeOtherStrokes(data: IconData, properties: ILottieProperty[], value
 
 /**
  * Create new customized icon data.
- * @param data 
- * @param assign 
- * @param params 
- * @returns 
+ * @param data Original Lottie data.
+ * @param assign Icon properties to assign.
+ * @param params Additional parameters.
+ * @returns Customized Lottie data.
  */
-export function transformIcon(
-    data: IconData,
-    assign: IProperties,
+export function customizeIcon(
+    data: LottieData,
+    assign: IconProperties,
     minify?: 'full' | 'partial',
-) {
-    const properties = extractProperties(data);
+): LottieData {
+    const properties = extractLottieProperties(data);
     const newData = deepClone(data);
 
     if (assign.stroke) {

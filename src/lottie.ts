@@ -1,11 +1,11 @@
 import { set } from "./helpers";
-import { AnimationItem, ILottieProperty, IRGBColor, IconData, LottieColor, LottieFieldType } from "./interfaces";
+import { LottieAnimation, LottieProperty, RGBColor, LottieData, RGBTuple, LottiePropertyType } from "./interfaces";
 import { parseColor } from "./parsers";
 
 /**
  * Convert to hexadecimal value.
- * @param c 
- * @returns 
+ * @param c - Color component (0-255).
+ * @returns Hexadecimal string representation of the color component.
  */
 function componentToHex(c: number) {
     const hex = c.toString(16);
@@ -14,10 +14,10 @@ function componentToHex(c: number) {
 
 /**
  * Convert from color object to hex value.
- * @param value 
- * @returns 
+ * @param value - Color object containing r, g, b properties.
+ * @returns Hexadecimal string representation of the color.
  */
-function rgbToHex(value: IRGBColor): string {
+function rgbToHex(value: RGBColor): string {
     return (
         '#' +
         componentToHex(value.r) +
@@ -28,10 +28,10 @@ function rgbToHex(value: IRGBColor): string {
 
 /**
  * Conver from hex to color object.
- * @param hex 
- * @returns 
+ * @param hex - Hexadecimal string representation of the color.
+ * @returns RGBColor object containing r, g, b properties.
  */
-function hexToRgb(hex: string): IRGBColor {
+function hexToRgb(hex: string): RGBColor {
     let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
     return {
         r: (data >> 16) & 255,
@@ -42,8 +42,8 @@ function hexToRgb(hex: string): IRGBColor {
 
 /**
  * Helper method for scale value.
- * @param n
- * @returns 
+ * @param n - Number to convert (0-255).
+ * @returns Scaled value in the range of 0 to 1, rounded to three decimal places.
  */
 function toUnitVector(n: number) {
     return Math.round((n / 255) * 1000) / 1000;
@@ -51,19 +51,19 @@ function toUnitVector(n: number) {
 
 /**
  * Helper method for scale value.
- * @param n
- * @returns 
+ * @param n - Number to convert (0-1).
+ * @returns Scaled value in the range of 0 to 255.
  */
 function fromUnitVector(n: number) {
     return Math.round(n * 255);
 }
 
 /**
- * Convert hex color to lottie representation.
- * @param hex
- * @returns 
+ * Convert hex color to tuple color representation.
+ * @param hex - Hexadecimal string representation of the color.
+ * @returns RGBTuple representing the color in the range of 0 to 1.
  */
-export function hexToLottieColor(hex: string): LottieColor {
+export function hexToTupleColor(hex: string): RGBTuple {
     const {
         r,
         g,
@@ -73,12 +73,12 @@ export function hexToLottieColor(hex: string): LottieColor {
 }
 
 /**
- * Conver lottie color representation to hex.
- * @param value 
- * @returns 
+ * Convert tuple color to hex representation.
+ * @param value RGBTuple representing the color in the range of 0 to 1.
+ * @returns Hexadecimal string representation of the color.
  */
-export function lottieColorToHex(value: LottieColor): string {
-    const color: IRGBColor = {
+export function tupleColorToHex(value: RGBTuple): string {
+    const color: RGBColor = {
         r: fromUnitVector(value[0]),
         g: fromUnitVector(value[1]),
         b: fromUnitVector(value[2]),
@@ -90,12 +90,12 @@ export function lottieColorToHex(value: LottieColor): string {
  * Return all supported customizable properties.
  * @param data Icon data.
  * @param options Options.
- * @returns 
+ * @returns Array of LottieProperty objects.
  */
-export function extractProperties(
-    data: IconData,
+export function extractLottieProperties(
+    data: LottieData,
     { lottieInstance }: { lottieInstance?: boolean } = {},
-): ILottieProperty[] {
+): LottieProperty[] {
     const result: any[] = [];
 
     if (!data || !data.layers) {
@@ -121,7 +121,7 @@ export function extractProperties(
                 path = `layers.${layerIndex}.ef.${fieldIndex}.ef.0.v.k`;
             }
 
-            let type: LottieFieldType | undefined;
+            let type: LottiePropertyType | undefined;
 
             if (field.mn === 'ADBE Color Control') {
                 type = 'color';
@@ -154,11 +154,14 @@ export function extractProperties(
 }
 
 /**
- * Reset data by indicated properties.
- * @param data 
- * @param properties 
+ * Reset data to default values by indicated properties.
+ * @param data Lottie data or animation to reset.
+ * @param properties Array of properties to reset.
  */
-export function resetProperties(data: IconData | AnimationItem, properties: ILottieProperty[]): any {
+export function resetLottieProperties(
+    data: LottieData | LottieAnimation,
+    properties: LottieProperty[],
+) {
     for (const property of properties) {
         set(data, property.path, property.value);
     }
@@ -166,11 +169,15 @@ export function resetProperties(data: IconData | AnimationItem, properties: ILot
 
 /**
  * Update data to value by indicated properties.
- * @param data 
- * @param properties 
- * @param value 
+ * @param data Lottie data or animation to update.
+ * @param properties Array of properties to update.
+ * @param value New value to set.
  */
-export function updateProperties(data: IconData | AnimationItem, properties: ILottieProperty[], value: any): any {
+export function updateLottieProperties(
+    data: LottieData | LottieAnimation,
+    properties: LottieProperty[],
+    value: any,
+) {
     for (const property of properties) {
         if (property.type === 'color') {
             if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
@@ -178,7 +185,7 @@ export function updateProperties(data: IconData | AnimationItem, properties: ILo
             } else if (Array.isArray(value)) {
                 set(data, property.path, value);
             } else if (typeof value === 'string') {
-                set(data, property.path, hexToLottieColor(parseColor(value)));
+                set(data, property.path, hexToTupleColor(parseColor(value)));
             }
         } else if (property.type === 'point') {
             if (typeof value === 'object' && 'x' in value && 'y' in value) {

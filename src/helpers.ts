@@ -1,15 +1,15 @@
 /**
  * Deep clone value.
- * @param value
+ * @param value Value to clone.
  */
-export function deepClone(value: any) {
-    return JSON.parse(JSON.stringify(value));
+export function deepClone<T = any>(value: T): T {
+    return structuredClone(value);
 }
 
 /**
  * Checks if value is null or undefined.
- * @param value 
- * @returns
+ * @param value Value to check.
+ * @returns True if value is null or undefined, false otherwise.
  */
 export function isNil(value: any) {
     return value === null || value === undefined;
@@ -17,7 +17,8 @@ export function isNil(value: any) {
 
 /**
  * Checks if value is object like.
- * @param value
+ * @param value Value to check.
+ * @returns True if value is object like, false otherwise.
  */
 export function isObjectLike(value: any): value is object {
     return value !== null && typeof value === "object";
@@ -25,8 +26,8 @@ export function isObjectLike(value: any): value is object {
 
 /**
  * Checks if path is a direct property of object.
- * @param object
- * @param path
+ * @param object Object to check.
+ * @param path Path to check.
  */
 export function has<T>(object: T, path: string | string[]): boolean {
     const newPath = Array.isArray(path) ? path : path.split(".");
@@ -49,9 +50,9 @@ export function has<T>(object: T, path: string | string[]): boolean {
 
 /**
  * Get object value from path. Otherwise return defaultValue.
- * @param object
- * @param path
- * @param defaultValue
+ * @param object Object to get value from.
+ * @param path Path to the value.
+ * @param defaultValue Default value to return if not found.
  */
 export function get<T>(object: T, path: string | string[], defaultValue?: any): any {
     const newPath = Array.isArray(path) ? path : path.split(".");
@@ -74,9 +75,9 @@ export function get<T>(object: T, path: string | string[], defaultValue?: any): 
 
 /**
  * Update object value on path.
- * @param object
- * @param path
- * @param value
+ * @param object Object to update.
+ * @param path Path to the value.
+ * @param value New value to set.
  */
 export function set(object: any, path: string | string[], value: any) {
     let current = object;

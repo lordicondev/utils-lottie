@@ -1,22 +1,27 @@
 /**
- * Icon data in JSON format. This player is optimized to handle JSON (Lordicon Lottie) icons from [Lordicon Library](https://lordicon.com/).
+ * Icon data in JSON format.
  */
-export type IconData = any;
+export type LottieData = any;
 
 /**
- * AnimationItem from lottie-web.
+ * AnimationItem from `@lordicon/player-web-internal`.
  */
-export type AnimationItem = any;
+export type LottieAnimation = any;
 
 /**
- * Lottie color type.
+ * Supported property types.
  */
-export type LottieColor = [number, number, number];
+export type LottiePropertyType = 'color' | 'slider' | 'point' | 'checkbox' | 'feature';
 
 /**
- * Supported field types.
+ * Interface for found property.
  */
-export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox' | 'feature';
+export interface LottieProperty {
+    name: string;
+    path: string;
+    type: LottiePropertyType;
+    value: any;
+}
 
 /**
  * Supported stroke values.
@@ -24,22 +29,17 @@ export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox' | 'featu
 export type Stroke = 1 | 2 | 3 | 'light' | 'regular' | 'bold';
 
 /**
+ * Type for RGB color in Lottie format.
+ */
+export type RGBTuple = [number, number, number];
+
+/**
  * Interface for colors parameters.
  */
-export interface IRGBColor {
+export interface RGBColor {
     r: number;
     g: number;
     b: number;
-}
-
-/**
- * Interface for found property.
- */
-export interface ILottieProperty {
-    name: string;
-    path: string;
-    value: any;
-    type: LottieFieldType;
 }
 
 /**
@@ -53,14 +53,12 @@ export interface ILottieProperty {
  * }
  * ```
  */
-export interface IColors {
+export interface ColorsMap {
     [key: string]: string;
 }
 
 /**
- * Interface for an object with customizable properties supported by {@link IPlayer | player}.
- * 
- * Notice: not every icon support all of that properties. This usually depends on the icon family.
+ * Interface for icon properties.
  * 
  * Example:
  * ```js
@@ -72,12 +70,7 @@ export interface IColors {
  * }
  * ```
  */
-export interface IProperties {
-    /**
-     * Stroke.
-     */
-    stroke?: Stroke;
-
+export interface IconProperties {
     /**
      * State (motion type) of the icon. States allow switching between multiple animations built into a single icon file.
      */
@@ -86,13 +79,18 @@ export interface IProperties {
     /**
      * Colors.
      */
-    colors?: IColors;
+    colors?: ColorsMap;
+
+    /**
+     * Stroke.
+     */
+    stroke?: Stroke;
 }
 
 /**
  * Animation state details.
  */
-export interface IState {
+export interface IconState {
     name: string;
     time: number;
     duration: number;

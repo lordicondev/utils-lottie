@@ -1,4 +1,4 @@
-import { IColors } from './interfaces.js';
+import { ColorsMap } from './interfaces.js';
 
 /**
  * List of supported colors.
@@ -156,7 +156,7 @@ const COLORS: any = {
  * ```
  * 
  * @param colorName Color name.
- * @returns 
+ * @returns Hexadecimal color string.
  */
 export function parseColor(colorName: string): string {
     if (colorName.startsWith('#')) {
@@ -182,14 +182,14 @@ export function parseColor(colorName: string): string {
  * @param colors Colors definied in string.
  * @returns Object with colors.
  */
-export function parseColors(colors: any): IColors | undefined {
+export function parseColors(colors: string): ColorsMap | undefined {
     if (!colors || typeof colors !== 'string') {
         return undefined;
     }
 
     const list = colors.split(',').filter(c => c).map(c => c.split(':')).filter(c => c.length == 2);
 
-    return list.reduce<IColors>((p, c) => {
+    return list.reduce<ColorsMap>((p, c) => {
         const a = c[0];
         p[a.toLowerCase()] = parseColor(c[1]);
         return p;
@@ -198,10 +198,10 @@ export function parseColors(colors: any): IColors | undefined {
 
 /**
  * Parse stroke attribute to supported range.
- * @param value
- * @returns 
+ * @param value Stroke value.
+ * @returns Stroke value in the range of 1 to 3, or undefined if not valid.
  */
-export function parseStroke(value: any): (1 | 2 | 3 | undefined) {
+export function parseStroke(value: string | number): (1 | 2 | 3 | undefined) {
     if (value === 'light' || value === 1 || value === '1') {
         return 1;
     } else if (value === 'regular' || value === 2 || value === '2') {
@@ -215,8 +215,8 @@ export function parseStroke(value: any): (1 | 2 | 3 | undefined) {
 
 /**
  * Parse state attribute.
- * @param value
- * @returns
+ * @param value State value.
+ * @returns Returns the state as a string if valid, otherwise undefined.
  */
 export function parseState(value: any): (string | undefined) {
     if (typeof value === 'string') {
