@@ -1,4 +1,4 @@
-import lottie from '@lordicon/player-web-internal';
+import lottie from '@lordicon/internal';
 import { deepClone, customizeIcon } from "../src";
 import { downloadJSON } from "./utils";
 

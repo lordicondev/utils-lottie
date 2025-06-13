@@ -4,7 +4,7 @@
 export type LottieData = any;
 
 /**
- * AnimationItem from `@lordicon/player-web-internal`.
+ * AnimationItem from `@lordicon/internal`.
  */
 export type LottieAnimation = any;
 
