@@ -1,5 +1,5 @@
 import lottie from '@lordicon/player-web-internal';
-import { deepClone, transformIcon } from "../src";
+import { deepClone, customizeIcon } from "../src";
 import { downloadJSON } from "./utils";
 
 async function loadIcon(name) {
@@ -37,13 +37,13 @@ const icon4 = document.getElementById("icon-4");
 const icon5 = document.getElementById("icon-5");
 
 initIcon(icon1, iconLock);
-initIcon(icon2, transformIcon(iconLock, { state: "hover-locked" }, "full"));
+initIcon(icon2, customizeIcon(iconLock, { state: "hover-locked" }, "full"));
 initIcon(icon3, iconHourglass);
 initIcon(
     icon4,
-    transformIcon(iconHourglass, { state: "loop-spin", stroke: 3 }, "partial")
+    customizeIcon(iconHourglass, { state: "loop-spin", stroke: 3 }, "partial")
 );
 initIcon(
     icon5,
-    transformIcon(iconHourglass, { state: "loop-spin", stroke: 3 }, "full")
+    customizeIcon(iconHourglass, { state: "loop-spin", stroke: 3 }, "full")
 );

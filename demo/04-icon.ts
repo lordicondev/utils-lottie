@@ -1,5 +1,5 @@
 import lottie from '@lordicon/player-web-internal';
-import { deepClone, transformIcon } from '../src';
+import { deepClone, customizeIcon } from '../src';
 import { downloadJSON } from './utils';
 
 async function loadIcon(name) {
@@ -38,8 +38,8 @@ const icon5 = document.getElementById('icon-5');
 const icon6 = document.getElementById('icon-6');
 
 initIcon(icon1, iconLock);
-initIcon(icon2, transformIcon(iconLock, { colors: { primary: 'red', secondary: 'blue' } }));
-initIcon(icon3, transformIcon(iconLock, { stroke: 'bold' }));
-initIcon(icon4, transformIcon(iconLock, { state: 'morph-unlocked' }));
-initIcon(icon5, transformIcon(iconLock, { state: 'hover-unlocked', stroke: 'light', colors: { primary: 'red', secondary: 'blue' } }));
-initIcon(icon6, transformIcon(iconMoneyBag, { stroke: 'bold' }));
+initIcon(icon2, customizeIcon(iconLock, { colors: { primary: 'red', secondary: 'blue' } }));
+initIcon(icon3, customizeIcon(iconLock, { stroke: 'bold' }));
+initIcon(icon4, customizeIcon(iconLock, { state: 'morph-unlocked' }));
+initIcon(icon5, customizeIcon(iconLock, { state: 'hover-unlocked', stroke: 'light', colors: { primary: 'red', secondary: 'blue' } }));
+initIcon(icon6, customizeIcon(iconMoneyBag, { stroke: 'bold' }));

@@ -13,34 +13,6 @@ function componentToHex(c: number) {
 }
 
 /**
- * Convert from color object to hex value.
- * @param value - Color object containing r, g, b properties.
- * @returns Hexadecimal string representation of the color.
- */
-function rgbToHex(value: RGBColor): string {
-    return (
-        '#' +
-        componentToHex(value.r) +
-        componentToHex(value.g) +
-        componentToHex(value.b)
-    );
-}
-
-/**
- * Conver from hex to color object.
- * @param hex - Hexadecimal string representation of the color.
- * @returns RGBColor object containing r, g, b properties.
- */
-function hexToRgb(hex: string): RGBColor {
-    let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
-    return {
-        r: (data >> 16) & 255,
-        g: (data >> 8) & 255,
-        b: data & 255,
-    };
-}
-
-/**
  * Helper method for scale value.
  * @param n - Number to convert (0-255).
  * @returns Scaled value in the range of 0 to 1, rounded to three decimal places.
@@ -56,6 +28,34 @@ function toUnitVector(n: number) {
  */
 function fromUnitVector(n: number) {
     return Math.round(n * 255);
+}
+
+/**
+ * Convert from color object to hex value.
+ * @param value - Color object containing r, g, b properties.
+ * @returns Hexadecimal string representation of the color.
+ */
+export function rgbToHex(value: RGBColor): string {
+    return (
+        '#' +
+        componentToHex(value.r) +
+        componentToHex(value.g) +
+        componentToHex(value.b)
+    );
+}
+
+/**
+ * Conver from hex to color object.
+ * @param hex - Hexadecimal string representation of the color.
+ * @returns RGBColor object containing r, g, b properties.
+ */
+export function hexToRgb(hex: string): RGBColor {
+    let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
+    return {
+        r: (data >> 16) & 255,
+        g: (data >> 8) & 255,
+        b: data & 255,
+    };
 }
 
 /**
