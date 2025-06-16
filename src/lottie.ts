@@ -1,4 +1,4 @@
-import { LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RgbColor, RgbTuple } from "./interfaces";
+import { ColorMap, LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RgbColor, RgbTuple } from "./interfaces";
 import { parseColor } from "./parsers";
 import { set } from "./utils";
 
@@ -199,5 +199,35 @@ export function updateLottieProperties(
         } else {
             set(data, property.path, value);
         }
+    }
+}
+
+/**
+ * Remaps colors in Lottie data according to the provided color map.
+ * @param data Lottie data to remap colors in.
+ * @param colors Color map where keys are original colors in hex format and values are new colors in hex format.
+ * @returns Lottie data with colors remapped according to the provided color map.
+ */
+export function remapColors(
+    data: LottieData,
+    colors: ColorMap,
+): LottieData {
+    if (Object.keys(colors).length > 0) {
+        const fields = extractLottieProperties(data);
+        const colorFields = fields.filter((field) => field.type === 'color');
+
+        for (const field of colorFields) {
+            const color = tupleColorToHex(field.value);
+
+            for (const [key, value] of Object.entries(colors)) {
+                if (color === key) {
+                    set(data, field.path, hexToTupleColor(value));
+                }
+            }
+        }
+
+        return data;
+    } else {
+        return data;
     }
 }
