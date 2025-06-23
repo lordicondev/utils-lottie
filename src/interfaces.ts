@@ -94,5 +94,6 @@ export interface IconState {
     name: string;
     time: number;
     duration: number;
+    params: string[];
     default?: boolean;
 }
