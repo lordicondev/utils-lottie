@@ -103,8 +103,13 @@ function assignState(data: LottieData, _properties: LottieProperty[], value: any
     }
 
     for (const marker of data.markers || []) {
-        const [partA, partB] = marker.cm.split(':');
-        const name = partB || partA;
+        const parts = marker.cm.split(':');
+
+        if (parts[0] === 'default') {
+            parts.shift();
+        }
+
+        const name = parts[0];
 
         marker.cm = name;
 
@@ -113,6 +118,7 @@ function assignState(data: LottieData, _properties: LottieProperty[], value: any
         }
 
         marker.cm = `default:${name}`;
+
         data.ip = marker.tm;
         data.op = marker.tm + marker.dr;
     }
@@ -231,7 +237,6 @@ export function customizeIcon(
 
     if (assign.state) {
         assignState(newData, properties, assign.state);
-
     }
 
     if (minify === 'partial' || minify === 'full') {
