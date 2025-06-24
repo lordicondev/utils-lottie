@@ -109,7 +109,7 @@ function assignState(data: LottieData, _properties: LottieProperty[], value: any
             parts.shift();
         }
 
-        const name = parts[0];
+        const [name, ...params] = parts;
 
         marker.cm = name;
 
@@ -117,7 +117,11 @@ function assignState(data: LottieData, _properties: LottieProperty[], value: any
             continue;
         }
 
-        marker.cm = `default:${name}`;
+        marker.cm = [
+            'default',
+            name,
+            ...params,
+        ].join(':');
 
         data.ip = marker.tm;
         data.op = marker.tm + marker.dr;
