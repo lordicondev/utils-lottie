@@ -231,3 +231,17 @@ export function remapColors(
         return data;
     }
 }
+
+/** * Recursively removes expressions from Lottie data by deleting "x" properties that contain expressions.
+ * @param data Lottie data to remove expressions from.
+ */
+export function removeExpressions(data: LottieData) {
+    if (Array.isArray(data)) {
+        data.forEach(removeExpressions);
+    } else if (data && typeof data === "object") {
+        if ("x" in data && typeof data.x === "string") {
+            delete data.x;
+        }
+        Object.values(data).forEach(removeExpressions);
+    }
+}
