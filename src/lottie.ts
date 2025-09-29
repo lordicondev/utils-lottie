@@ -232,7 +232,8 @@ export function remapColors(
     }
 }
 
-/** * Recursively removes expressions from Lottie data by deleting "x" properties that contain expressions.
+/** 
+ * Recursively removes expressions from Lottie data by deleting "x" properties that contain expressions.
  * @param data Lottie data to remove expressions from.
  */
 export function removeExpressions(data: LottieData) {
