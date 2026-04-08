@@ -1,5 +1,5 @@
 import { ColorMap, IconProperties, LottieData, LottieProperty } from './interfaces';
-import { extractLottieProperties, hexToTupleColor, updateLottieProperties } from './lottie';
+import { extractLottieProperties, hexToTupleColor, removeExpressions, updateLottieProperties } from './lottie';
 import { parseColor, parseState, parseStroke } from './parsers';
 import { deepClone, isObjectLike } from './utils';
 
@@ -253,6 +253,8 @@ export function customizeIcon(
         if (assign.state) {
             removeOtherAnimations(newData, properties, assign.state);
         }
+
+        removeExpressions(newData);
     }
 
     return newData;
