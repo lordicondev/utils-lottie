@@ -1,6 +1,15 @@
-import { ColorMap, LottieAnimationInstance, LottieData, LottieProperty, LottiePropertyType, RgbColor, RgbTuple } from "./interfaces";
-import { parseColor } from "./parsers";
-import { set } from "./utils";
+import type { IconData } from './icon-data';
+import type {
+    ColorMap,
+    LottieAnimationInstance,
+    LottieData,
+    LottieProperty,
+    LottiePropertyType,
+    RgbColor,
+    RgbTuple,
+} from './interfaces';
+import { resolveColor } from './parsers';
+import { set } from './utils';
 
 /**
  * Converts a color component to a two-digit hexadecimal string.
@@ -27,7 +36,7 @@ function toUnitVector(n: number) {
  * @returns Color component (0-255), rounded to the nearest integer.
  */
 function fromUnitVector(n: number) {
-    return Math.round(n * 255);
+    return Math.round(Math.min(Math.max(n, 0), 1) * 255);
 }
 
 /**
@@ -36,12 +45,7 @@ function fromUnitVector(n: number) {
  * @returns Hexadecimal color string (e.g., "#ff0000").
  */
 export function rgbToHex(value: RgbColor): string {
-    return (
-        '#' +
-        componentToHex(value.r) +
-        componentToHex(value.g) +
-        componentToHex(value.b)
-    );
+    return '#' + componentToHex(value.r) + componentToHex(value.g) + componentToHex(value.b);
 }
 
 /**
@@ -50,7 +54,8 @@ export function rgbToHex(value: RgbColor): string {
  * @returns RgbColor object with r, g, b properties.
  */
 export function hexToRgb(hex: string): RgbColor {
-    let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
+    const color = resolveColor(hex.startsWith('#') ? hex : `#${hex}`) ?? '#000000';
+    const data = parseInt(color.substring(1), 16);
     return {
         r: (data >> 16) & 255,
         g: (data >> 8) & 255,
@@ -64,11 +69,7 @@ export function hexToRgb(hex: string): RgbColor {
  * @returns RgbTuple with values normalized to 0-1.
  */
 export function hexToTupleColor(hex: string): RgbTuple {
-    const {
-        r,
-        g,
-        b
-    } = hexToRgb(hex);
+    const { r, g, b } = hexToRgb(hex);
     return [toUnitVector(r), toUnitVector(g), toUnitVector(b)];
 }
 
@@ -108,7 +109,11 @@ export function extractLottieProperties(
         }
 
         layer.ef.forEach((field: any, fieldIndex: number) => {
-            const value = field?.ef?.[0]?.v?.k;
+            if (typeof field?.mn !== 'string' || typeof field?.nm !== 'string') {
+                return;
+            }
+
+            const value = field.ef?.[0]?.v?.k;
             if (value === undefined) {
                 return;
             }
@@ -182,11 +187,16 @@ export function updateLottieProperties(
     for (const property of properties) {
         if (property.type === 'color') {
             if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
-                set(data, property.path, [toUnitVector(value.r), toUnitVector(value.g), toUnitVector(value.b)]);
+                set(data, property.path, [
+                    toUnitVector(value.r),
+                    toUnitVector(value.g),
+                    toUnitVector(value.b),
+                ]);
             } else if (Array.isArray(value)) {
                 set(data, property.path, value);
             } else if (typeof value === 'string') {
-                set(data, property.path, hexToTupleColor(parseColor(value)));
+                const color = resolveColor(value);
+                if (color) set(data, property.path, hexToTupleColor(color));
             }
         } else if (property.type === 'point') {
             if (typeof value === 'object' && 'x' in value && 'y' in value) {
@@ -203,44 +213,91 @@ export function updateLottieProperties(
 }
 
 /**
- * Remaps colors in Lottie data according to the provided color map.
- * @param data Lottie data to remap colors in.
- * @param colors Color map where keys are original colors in hex format and values are new colors in hex format.
- * @returns Lottie data with colors remapped according to the provided color map.
+ * The icon's own colors, by name: `{ primary: '#121331', secondary: '#08a88a' }`.
+ * @param data Lottie data.
  */
-export function remapColors(
-    data: LottieData,
-    colors: ColorMap,
-): LottieData {
-    if (Object.keys(colors).length > 0) {
-        const fields = extractLottieProperties(data);
-        const colorFields = fields.filter((field) => field.type === 'color');
+export function defaultColors(data: LottieData): ColorMap {
+    const colors: ColorMap = {};
 
-        for (const field of colorFields) {
-            const color = tupleColorToHex(field.value);
-
-            for (const [key, value] of Object.entries(colors)) {
-                if (color === key) {
-                    set(data, field.path, hexToTupleColor(value));
-                }
-            }
+    for (const property of extractLottieProperties(data)) {
+        if (property.type === 'color' && Array.isArray(property.value)) {
+            colors[property.name] = tupleColorToHex(property.value as RgbTuple);
         }
-
-        return data;
-    } else {
-        return data;
     }
+
+    return colors;
 }
 
-/** 
+/**
+ * Replaces colours in Lottie data, matched by the icon's own colours: `{ '#121331': 'red' }`.
+ * Keys and values may be any hex value or CSS colour name; ones that are not colours are
+ * skipped.
+ *
+ * Changes `data` in place and returns the same object, not a copy. To keep the original,
+ * pass a copy: `remapColors(structuredClone(data), colors)`.
+ */
+export function remapColors(data: LottieData, colors: ColorMap): LottieData {
+    const byHex = normalizeColors(colors);
+    if (!byHex.size) {
+        return data;
+    }
+
+    for (const field of extractLottieProperties(data)) {
+        if (field.type !== 'color') continue;
+
+        const color = byHex.get(tupleColorToHex(field.value));
+        if (color) set(data, field.path, hexToTupleColor(color));
+    }
+
+    return data;
+}
+
+/**
+ * The icon's colours to change, by name, from a map keyed by the icon's own colours:
+ * `{ '#121331': 'red' }` gives `{ primary: '#ff0000' }` for an icon whose primary is `#121331`.
+ * For the player's `colors` or the `colors` attribute.
+ */
+export function colorsByName(data: IconData, colors: ColorMap): ColorMap {
+    const byHex = normalizeColors(colors);
+    const result: ColorMap = {};
+
+    for (const [name, color] of Object.entries(defaultColors(data))) {
+        const replacement = byHex.get(color);
+        if (replacement) result[name] = replacement;
+    }
+
+    return result;
+}
+
+/** True when the icon's stroke width can be changed: it has a `stroke` or `stroke-layers` effect. */
+export function hasStroke(data: IconData): boolean {
+    return extractLottieProperties(data).some(
+        (property) => property.name === 'stroke' || property.name === 'stroke-layers',
+    );
+}
+
+/** A colour map with both sides as `#rrggbb`; pairs that are not colours are dropped. */
+function normalizeColors(colors: ColorMap): Map<string, string> {
+    const result = new Map<string, string>();
+
+    for (const [from, to] of Object.entries(colors)) {
+        const key = resolveColor(from);
+        const value = resolveColor(to);
+        if (key && value) result.set(key, value);
+    }
+
+    return result;
+}
+
+/**
  * Recursively removes expressions from Lottie data by deleting "x" properties that contain expressions.
  * @param data Lottie data to remove expressions from.
  */
 export function removeExpressions(data: LottieData) {
     if (Array.isArray(data)) {
         data.forEach(removeExpressions);
-    } else if (data && typeof data === "object") {
-        if ("x" in data && typeof data.x === "string") {
+    } else if (data && typeof data === 'object') {
+        if ('x' in data && typeof data.x === 'string') {
             delete data.x;
         }
         Object.values(data).forEach(removeExpressions);

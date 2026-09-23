@@ -1,6 +1,11 @@
-import { ColorMap, IconProperties, LottieData, LottieProperty } from './interfaces';
-import { extractLottieProperties, hexToTupleColor, removeExpressions, updateLottieProperties } from './lottie';
-import { parseColor, parseState, parseStroke } from './parsers';
+import type { ColorMap, IconProperties, LottieData, LottieProperty } from './interfaces';
+import {
+    extractLottieProperties,
+    hexToTupleColor,
+    removeExpressions,
+    updateLottieProperties,
+} from './lottie';
+import { parseStroke, resolveColor } from './parsers';
 import { deepClone, isObjectLike } from './utils';
 
 function findObject(currentData: any, key: string) {
@@ -27,7 +32,7 @@ function assignStroke(data: LottieData, properties: LottieProperty[], value: any
         return;
     }
 
-    const keys = properties.map(c => c.name);
+    const keys = properties.map((c) => c.name);
 
     // layers
     if (keys.includes('stroke-layers')) {
@@ -35,7 +40,7 @@ function assignStroke(data: LottieData, properties: LottieProperty[], value: any
             1: findObject(data, `effect('stroke-layers')('Menu') == 1`),
             2: findObject(data, `effect('stroke-layers')('Menu') == 2`),
             3: findObject(data, `effect('stroke-layers')('Menu') == 3`),
-        }
+        };
 
         for (const k of [1, 2, 3]) {
             for (const s of (strokes as any)[k]) {
@@ -48,11 +53,11 @@ function assignStroke(data: LottieData, properties: LottieProperty[], value: any
         }
     } else if (keys.includes('stroke')) {
         const regex = /\$bm_div\(value,[ ]{0,}([0-9]+)\)/gm;
-        const property = properties.filter(c => c.name === 'stroke')[0];
+        const property = properties.filter((c) => c.name === 'stroke')[0];
         const strokeObjects = findObject(data, `effect('stroke')('Menu')`);
 
         for (const s of strokeObjects) {
-            const scale = (property && property.value) ? (stroke / property.value) : stroke;
+            const scale = property && property.value ? stroke / property.value : stroke;
 
             if (isObjectLike(s.k) && Array.isArray(s.k)) {
                 for (const l of s.k) {
@@ -79,7 +84,8 @@ function assignStroke(data: LottieData, properties: LottieProperty[], value: any
 
 function assignColors(data: LottieData, properties: LottieProperty[], value: ColorMap) {
     for (const colorName of Object.keys(value)) {
-        const color = parseColor(value[colorName]);
+        const color = resolveColor(value[colorName]);
+        if (!color) continue;
         const colorObjects = findObject(data, `effect('${colorName}')('Color')`);
 
         // layers
@@ -96,75 +102,85 @@ function assignColors(data: LottieData, properties: LottieProperty[], value: Col
     }
 }
 
+/** The state a marker names: `default:morph-select:0.5` gives `morph-select`. */
+function markerState(cm: string): string {
+    const parts = cm.split(':');
+    if (parts[0] === 'default') parts.shift();
+    return parts[0];
+}
+
+/** The state a layer or asset belongs to: `bold:morph-select:0.5` gives `morph-select`. */
+function layerState(nm: unknown): string | null {
+    if (typeof nm !== 'string') return null;
+
+    const parts = nm.split(':');
+    if (parts.length > 1 && ['light', 'regular', 'bold'].includes(parts[0])) parts.shift();
+    return parts[0];
+}
+
+/** The state `value` names, when the file has it. */
+function knownState(data: LottieData, value: unknown): string | null {
+    if (typeof value !== 'string') return null;
+
+    const markers: { cm?: unknown }[] = data.markers || [];
+    const found = markers.some(
+        (marker) => typeof marker.cm === 'string' && markerState(marker.cm) === value,
+    );
+    return found ? value : null;
+}
+
+/**
+ * Makes `value` the default state and narrows the file to it. Other markers keep their
+ * params. A state the file does not have changes nothing.
+ */
 function assignState(data: LottieData, _properties: LottieProperty[], value: any) {
-    const state = parseState(value);
+    const state = knownState(data, value);
     if (!state) {
         return;
     }
 
     for (const marker of data.markers || []) {
         const parts = marker.cm.split(':');
-
         if (parts[0] === 'default') {
             parts.shift();
         }
 
-        const [name, ...params] = parts;
-
-        marker.cm = name;
-
-        if (name !== state) {
+        if (parts[0] !== state) {
+            marker.cm = parts.join(':');
             continue;
         }
 
-        marker.cm = [
-            'default',
-            name,
-            ...params,
-        ].join(':');
+        marker.cm = ['default', ...parts].join(':');
 
+        // The state's last frame is tm + dr; op is the first frame after it.
         data.ip = marker.tm;
-        data.op = marker.tm + marker.dr;
+        data.op = marker.tm + marker.dr + 1;
     }
 }
 
 function removeOtherAnimations(data: LottieData, _properties: LottieProperty[], value: string) {
-    const state = parseState(value);
+    const state = knownState(data, value);
     if (!state) {
         return;
     }
 
-    // states
-    const markers = (data.markers || []).map((c: any) => {
-        const [partA, partB] = c.cm.split(':');
-        const name = partB || partA;
-        return name;
-    })
+    const states = (data.markers || []).map((marker: any) => markerState(marker.cm));
 
-    // remove redundant markers
-    if (state && data.markers) {
-        data.markers = data.markers.filter((c: any) => {
-            const [partA, partB] = c.cm.split(':');
-            const name = partB || partA;
-            return name === state;
-        });
+    if (data.markers) {
+        data.markers = data.markers.filter((marker: any) => markerState(marker.cm) === state);
     }
 
-    // remove redundant layers 
+    // Layers and assets of other states go; the rest (the control layer) stays.
     for (const key of ['assets', 'layers']) {
-        data[key] = data[key].filter((c: any) => {
-            const [partA, partB] = c.nm.split(':');
-            const name = partB || partA;
+        if (!Array.isArray(data[key])) continue;
 
-            if (!markers.includes(name)) {
-                return true;
-            }
-
-            return name === state ? true : false;
+        data[key] = data[key].filter((item: any) => {
+            const name = layerState(item.nm);
+            return name === null || !states.includes(name) || name === state;
         });
     }
 
-    // move animations to beginning
+    // Move the state to the start of the file.
     const start = data.ip;
 
     data.ip = 0;
@@ -195,16 +211,17 @@ function removeOtherStrokes(data: LottieData, properties: LottieProperty[], valu
         3: 'bold',
     };
 
-    // remove redundant layers 
+    // remove redundant layers
     for (const key of ['assets', 'layers']) {
+        if (!Array.isArray(data[key])) continue;
+
+        // `bold:in-reveal` is the bold variant; a name without a stroke prefix stays.
         data[key] = data[key].filter((c: any) => {
-            const [partA, partB] = c.nm.split(':');
+            if (typeof c.nm !== 'string') return true;
 
-            if (partB && stroke && partA != (STROKES as any)[stroke]) {
-                return false;
-            }
-
-            return true;
+            const [prefix] = c.nm.split(':');
+            const variant = Object.values(STROKES).includes(prefix) && c.nm.includes(':');
+            return !variant || prefix === (STROKES as any)[stroke];
         });
     }
 

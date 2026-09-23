@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Colours</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./main.css" />
+        <script type="module" src="/03-colors.ts"></script>
+    </head>
+
+    <body>
+        <p><a href="/">Examples</a></p>
+        <h1>Colours</h1>
+        <p>
+            <code>resolveColor()</code> reads any hex value or CSS colour name, and says when a
+            value is not a colour.
+        </p>
+        <div class="controls">
+            <input id="value" value="Tomato" />
+            <span id="resolved"></span>
+        </div>
+        <p>
+            Change the icon's own colours. <code>colorsByName()</code> turns the change into a map
+            by name, <code>formatColors()</code> into a <code>colors</code> attribute, and
+            <code>remapColors()</code> writes it into a copy of the file.
+        </p>
+        <div class="controls" id="pickers"></div>
+        <div class="tiles"><div id="preview" class="icon"></div></div>
+        <pre id="output"></pre>
+    </body>
+</html>

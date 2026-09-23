@@ -1,6 +1,8 @@
 /**
- * Icon data in JSON format.
+ * Any Lottie JSON, untyped. The older functions take it; `IconData` describes the file for
+ * new code.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LottieData = any;
 
 /**
@@ -44,12 +46,12 @@ export interface RgbColor {
 
 /**
  * Interface for the object that stores multiple colors.
- * 
+ *
  * Example:
  * ```js
  * {
  *     primary: 'red',
- *     secondary: '#ff0000', 
+ *     secondary: '#ff0000',
  * }
  * ```
  */
@@ -59,7 +61,7 @@ export interface ColorMap {
 
 /**
  * Interface for icon properties.
- * 
+ *
  * Example:
  * ```js
  * {

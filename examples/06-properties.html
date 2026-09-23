@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Properties</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./main.css" />
+        <script type="module" src="/06-properties.ts"></script>
+    </head>
+
+    <body>
+        <p><a href="/">Examples</a></p>
+        <h1>Properties</h1>
+        <p>
+            The low-level way in: <code>extractLottieProperties()</code> lists the effects that hold
+            colours and stroke, <code>updateLottieProperties()</code> writes them,
+            <code>resetLottieProperties()</code> puts them back.
+        </p>
+        <div class="controls">
+            <button id="red">primary → red</button>
+            <button id="thin">stroke → 1</button>
+            <button id="reset">reset</button>
+        </div>
+        <div class="tiles"><div id="preview" class="icon"></div></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>type</th>
+                    <th>value</th>
+                    <th>path</th>
+                </tr>
+            </thead>
+            <tbody id="properties"></tbody>
+        </table>
+    </body>
+</html>

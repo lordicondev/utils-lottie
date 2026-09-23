@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Inspect</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./main.css" />
+        <script type="module" src="/01-inspect.ts"></script>
+    </head>
+
+    <body>
+        <p><a href="/">Examples</a></p>
+        <h1>Inspect an icon</h1>
+        <p>
+            Everything these utilities read from a file. Pick an example icon or open one of your
+            own.
+        </p>
+        <div class="controls">
+            <select id="icon"></select>
+            <input type="file" id="file" accept=".json,application/json" />
+        </div>
+        <div class="tiles" id="preview"></div>
+        <pre id="summary"></pre>
+        <table>
+            <thead>
+                <tr>
+                    <th>state</th>
+                    <th>type</th>
+                    <th>default</th>
+                    <th>segment</th>
+                    <th>ratio</th>
+                    <th>end frame</th>
+                </tr>
+            </thead>
+            <tbody id="states"></tbody>
+        </table>
+    </body>
+</html>

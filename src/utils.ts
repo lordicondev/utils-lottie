@@ -21,7 +21,7 @@ export function isNil(value: any) {
  * @returns True if value is object like, false otherwise.
  */
 export function isObjectLike(value: any): value is object {
-    return value !== null && typeof value === "object";
+    return value !== null && typeof value === 'object';
 }
 
 /**
@@ -30,7 +30,7 @@ export function isObjectLike(value: any): value is object {
  * @param path Path to check.
  */
 export function has<T>(object: T, path: string | string[]): boolean {
-    const newPath = Array.isArray(path) ? path : path.split(".");
+    const newPath = Array.isArray(path) ? path : path.split('.');
     let current: any = object;
 
     for (const key of newPath) {
@@ -57,7 +57,7 @@ export function has<T>(object: T, path: string | string[]): boolean {
  * @returns Value at the given path or defaultValue.
  */
 export function get<T>(object: T, path: string | string[], defaultValue?: any): any {
-    const newPath = Array.isArray(path) ? path : path.split(".");
+    const newPath = Array.isArray(path) ? path : path.split('.');
     let current: any = object;
 
     for (const key of newPath) {
@@ -76,21 +76,19 @@ export function get<T>(object: T, path: string | string[], defaultValue?: any): 
 }
 
 /**
- * Update object value on path.
+ * Sets the value at a path. Does nothing when a step on the way is missing or not an object.
  * @param object Object to update.
  * @param path Path to the value.
  * @param value New value to set.
  */
 export function set(object: any, path: string | string[], value: any) {
+    const keys = Array.isArray(path) ? path : path.split('.');
     let current = object;
 
-    const newPath = Array.isArray(path) ? path : path.split(".");
-
-    for (let i = 0; i < newPath.length; ++i) {
-        if (i === newPath.length - 1) {
-            current[newPath[i]] = value;
-        } else {
-            current = current[newPath[i]];
-        }
+    for (const key of keys.slice(0, -1)) {
+        if (!isObjectLike(current)) return;
+        current = (current as any)[key];
     }
+
+    if (isObjectLike(current)) (current as any)[keys[keys.length - 1]] = value;
 }

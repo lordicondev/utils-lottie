@@ -53,3 +53,55 @@ th {
         height: 128px;
     }
 }
+
+body {
+    padding: 24px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0 0 16px;
+}
+
+p {
+    max-width: 640px;
+}
+
+.tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+figure {
+    margin: 0;
+    padding: 8px;
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+}
+
+code,
+pre {
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+}
+
+.swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: middle;
+    border: 1px solid #0003;
+    border-radius: 3px;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}

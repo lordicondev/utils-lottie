@@ -1,39 +1,58 @@
 {
     "name": "@lordicon/utils-lottie",
-    "version": "1.3.0",
+    "version": "1.4.0",
+    "description": "Utilities for Lordicon Lottie files: states, colours, stroke and customised copies of an icon.",
     "author": "Lordicon <dev@lordicon.com>",
     "homepage": "https://lordicon.com/",
     "repository": "https://github.com/lordicondev/utils-lottie",
     "license": "MIT",
     "private": false,
-    "sideEffects": false,
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "files": [
-        "dist/**/*",
-        "README.md"
+        "dist",
+        "README.md",
+        "LICENSE.md",
+        "CHANGELOG.md"
     ],
     "keywords": [
         "lordicon",
         "lottie"
     ],
+    "engines": {
+        "node": ">=20"
+    },
     "scripts": {
         "start": "vite --config vite-examples.config.ts",
         "build": "vite build",
-        "prepack": "npm run build",
-        "test": "vitest"
+        "test": "vitest run",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "check:types": "tsc --noEmit",
+        "check": "npm run check:types && npm run lint && npm run format:check",
+        "prepack": "npm run build"
     },
-    "dependencies": {},
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@lordicon/internal": "^0.5.0",
-        "@types/node": "^22.9.0",
-        "typescript": "~5.6.2",
-        "vite": "^6.2.3",
-        "vite-plugin-dts": "^4.5.4",
-        "vitest": "^3.2.3"
-    },
-    "engines": {
-        "node": ">=20.0.0"
+        "@types/node": "^26.6.2",
+        "eslint": "^10.11.0",
+        "globals": "^17.12.0",
+        "prettier": "^3.9.9",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.70.1",
+        "vite": "^8.3.0",
+        "vite-plugin-dts": "^5.1.1",
+        "vitest": "^5.0.1"
     }
 }

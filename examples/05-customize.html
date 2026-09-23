@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Customize</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./main.css" />
+        <script type="module" src="/05-customize.ts"></script>
+    </head>
+
+    <body>
+        <p><a href="/">Examples</a></p>
+        <h1>A customised copy</h1>
+        <p>
+            <code>customizeIcon()</code> bakes a state, a stroke and colours into a new file. Minify
+            drops the other widths (<code>partial</code>) and the other states and expressions too
+            (<code>full</code>).
+        </p>
+        <div class="controls">
+            <select id="icon"></select>
+            <select id="state"></select>
+            <select id="stroke">
+                <option value="">stroke as it is</option>
+                <option>light</option>
+                <option>regular</option>
+                <option>bold</option>
+            </select>
+            <label>primary <input id="primary" type="color" /></label>
+            <select id="minify">
+                <option value="">no minify</option>
+                <option>partial</option>
+                <option>full</option>
+            </select>
+            <button id="download">Download</button>
+        </div>
+        <div class="tiles"><div id="preview" class="icon"></div></div>
+        <pre id="output"></pre>
+    </body>
+</html>
