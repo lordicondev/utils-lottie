@@ -8,8 +8,8 @@ import {
     stateSegment,
     stateType,
     type IconData,
-} from '../src';
-import { iconPicker, preview, size, tile } from './lib';
+} from '../src/index.ts';
+import { iconPicker, preview, size, tile } from './lib.ts';
 
 const summary = document.getElementById('summary')!;
 const rows = document.getElementById('states') as HTMLTableSectionElement;

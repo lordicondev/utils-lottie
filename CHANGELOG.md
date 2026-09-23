@@ -1,5 +1,47 @@
 # Changelog
 
+## 2.0.0
+
+Every function takes and returns typed data, and a function either reads the data or changes
+it, never both. What `customizeIcon` produces is the same as in 1.4.
+
+### Migrating from 1.x
+
+| 1.x                                                       | 2.0                                                          |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| `extractLottieProperties(data, { lottieInstance })`       | `readControls(data, { renderer })`                           |
+| `updateLottieProperties`, `resetLottieProperties`         | `updateControls`, `resetControls`                            |
+| `LottieProperty`, `LottiePropertyType`                    | `IconControl`, `IconControlType`                             |
+| `remapColors(data, byHex)`                                | `customizeIcon(data, { colors: colorsByName(data, byHex) })` |
+| `hexToTupleColor`, `tupleColorToHex`, `RgbTuple`          | `toLottieColor`, `fromLottieColor`, `LottieColor`            |
+| `hexToRgb`, `rgbToHex`, `RgbColor`                        | none                                                         |
+| `customizeIcon(data, properties, 'full')`                 | `customizeIcon(data, properties, { minify: 'full' })`        |
+| `parseColor`                                              | `resolveColor`, which gives null instead of black            |
+| `parseState`                                              | none                                                         |
+| `LottieData`, `LottieAnimationInstance`                   | `IconData`; `updateControls` takes any object                |
+| `get`, `set`, `has`, `isNil`, `isObjectLike`, `deepClone` | none; `structuredClone` for a copy                           |
+
+`remapColors` changed the data and returned it; its replacement returns a copy and leaves the
+data alone.
+
+### Added
+
+- `colorsByName()` takes the icon's own colours by name as well as the icon.
+
+### Changed
+
+- `IconControl` is a union by `type`, so `value` is typed: a `LottieColor` for a `color`, and
+  so on.
+- `toLottieColor()` takes any colour, names too, and gives null for what is not one.
+- `customizeIcon()` returns the type it is given.
+- `IconData` and the Lottie types have no index signature any more: an interface of your own
+  with the same fields is accepted, and fields they do not describe need that type.
+- `updateControls()` takes a colour as hex, a name or a Lottie colour, no longer `{ r, g, b }`,
+  and a point as `[x, y]`, no longer `{ x, y }`.
+- `parseStroke()` gives null for what is not a width, `parseColors()` null when no pair is a
+  colour.
+- `IconState.default` is always set.
+
 ## 1.4.0
 
 Nothing is removed or renamed; code written for 1.3 keeps working. Some results change where

@@ -1,18 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
     colorsByName,
+    customizeIcon,
     defaultColors,
     formatColors,
-    hexToRgb,
-    hexToTupleColor,
-    parseColor,
+    fromLottieColor,
     parseColors,
-    remapColors,
     resolveColor,
-    rgbToHex,
-    tupleColorToHex,
-} from '../src';
-import { icon } from './icons';
+    toLottieColor,
+} from '../src/index.ts';
+import { icon } from './icons.ts';
 
 describe('resolveColor', () => {
     it('reads hex values and CSS names, and says so when it cannot', () => {
@@ -23,24 +20,18 @@ describe('resolveColor', () => {
         expect(resolveColor('nope')).toBeNull();
         expect(resolveColor('#12')).toBeNull();
     });
-
-    it('has parseColor give black instead of null', () => {
-        expect(parseColor('#F00')).toBe('#ff0000');
-        expect(parseColor('#FF0000')).toBe('#ff0000');
-        expect(parseColor('nope')).toBe('#000000');
-        expect(parseColor('#12')).toBe('#000000');
-    });
 });
 
-describe('conversions', () => {
-    it('goes between hex, RGB and Lottie tuples', () => {
-        expect(hexToRgb('#ff8000')).toEqual({ r: 255, g: 128, b: 0 });
-        expect(hexToRgb('f80')).toEqual({ r: 255, g: 136, b: 0 });
-        expect(rgbToHex({ r: 255, g: 128, b: 0 })).toBe('#ff8000');
-        expect(hexToTupleColor('#f00')).toEqual([1, 0, 0]);
-        expect(tupleColorToHex([1, 0, 0])).toBe('#ff0000');
-        expect(tupleColorToHex(hexToTupleColor('#121331'))).toBe('#121331');
-        expect(tupleColorToHex([1.2, -0.1, 0.5])).toBe('#ff0080');
+describe('Lottie colours', () => {
+    it('goes between colours and Lottie colours', () => {
+        expect(toLottieColor('#f00')).toEqual([1, 0, 0]);
+        expect(toLottieColor('red')).toEqual([1, 0, 0]);
+        expect(toLottieColor('#ff8000')).toEqual([1, 0.502, 0]);
+        expect(toLottieColor('nope')).toBeNull();
+        expect(fromLottieColor([1, 0, 0])).toBe('#ff0000');
+        expect(fromLottieColor([1, 0, 0, 1])).toBe('#ff0000');
+        expect(fromLottieColor(toLottieColor('#121331')!)).toBe('#121331');
+        expect(fromLottieColor([1.2, -0.1, 0.5])).toBe('#ff0080');
     });
 });
 
@@ -51,7 +42,11 @@ describe('colors attribute', () => {
             secondary: '#00ff00',
         });
         expect(parseColors('primary:nope, secondary:red')).toEqual({ secondary: '#ff0000' });
-        expect(parseColors('')).toBeUndefined();
+    });
+
+    it('gives null when nothing is left', () => {
+        expect(parseColors('')).toBeNull();
+        expect(parseColors('primary:nope')).toBeNull();
     });
 
     it('writes a map back, leaving out what is not a colour', () => {
@@ -75,11 +70,19 @@ describe('icon colours', () => {
         expect(colorsByName(icon('lock'), { '#abcdef': 'red', '#121331': 'nope' })).toEqual({});
     });
 
-    it('remaps colours in the data, whatever the case or form of the colours', () => {
-        const data = icon('lock');
-        const result = remapColors(data, { '#121331': 'red', '#08A88A': '#00f', nope: 'blue' });
+    it('takes the icon’s own colours instead of the icon', () => {
+        const own = { primary: '#08A88A', secondary: 'rgb(0,0,0)' };
+        expect(colorsByName(own, { '#08a88a': 'red', '#000': 'blue' })).toEqual({
+            primary: '#ff0000',
+        });
+    });
 
-        expect(result).toBe(data);
-        expect(defaultColors(data)).toEqual({ primary: '#0000ff', secondary: '#ff0000' });
+    it('recolours a copy by the icon’s own colours, whatever their case or form', () => {
+        const data = icon('lock');
+        const colors = colorsByName(data, { '#121331': 'red', '#08A88A': '#00f', nope: 'blue' });
+        const result = customizeIcon(data, { colors });
+
+        expect(defaultColors(result)).toEqual({ primary: '#0000ff', secondary: '#ff0000' });
+        expect(defaultColors(data)).toEqual({ primary: '#08a88a', secondary: '#121331' });
     });
 });

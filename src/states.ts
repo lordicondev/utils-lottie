@@ -1,59 +1,35 @@
-import type { IconState, LottieData } from './interfaces.js';
+import type { IconData } from './icon-data.ts';
+import type { IconState, Segment, StateType } from './types.ts';
 
-/**
- * Supported state flags for icons.
- * Currently only 'default' is supported.
- */
-const SUPPORTED_STATE_FLAGS = ['default'];
+/** The icon's states, from its markers. Markers without a name or without frames are skipped. */
+export function readStates(data: IconData): IconState[] {
+    if (!Array.isArray(data?.markers)) return [];
 
-/**
- * Read states from lottie data.
- * @param data Lottie data to read states from.
- * @returns Array of icon states extracted from the data.
- */
-export function readStates(data: LottieData): IconState[] {
-    if (!data || !data.markers || !Array.isArray(data.markers)) {
-        return [];
-    }
+    return data.markers
+        .filter(
+            (marker) =>
+                typeof marker?.cm === 'string' && typeof marker.tm === 'number' && marker.dr > 0,
+        )
+        .map((marker) => {
+            const parts = marker.cm.split(':');
+            const state: IconState = {
+                name: '',
+                time: marker.tm,
+                duration: marker.dr,
+                params: [],
+                default: false,
+            };
 
-    const markers = data.markers.filter(
-        (c: any) => typeof c?.cm === 'string' && typeof c.tm === 'number' && c.dr > 0,
-    );
-
-    return markers.map((c: any) => {
-        const parts: string[] = c.cm.split(':');
-
-        const newState: IconState = {
-            time: c.tm,
-            duration: c.dr,
-            name: '',
-            default: false,
-            params: [],
-        };
-
-        // Read state flags from the first part of the marker name.
-        while (SUPPORTED_STATE_FLAGS.includes(parts[0])) {
-            switch (parts[0]) {
-                case 'default':
-                    newState.default = true;
-                    break;
-                default:
-                    throw new Error(`Unsupported state flag: ${parts[0]}`);
+            while (parts[0] === 'default') {
+                state.default = true;
+                parts.shift();
             }
 
-            parts.shift();
-        }
-
-        // Parse state name and parameters from the remaining parts.
-        newState.name = parts[0];
-        newState.params = parts.slice(1, parts.length);
-
-        return newState;
-    });
+            state.name = parts[0];
+            state.params = parts.slice(1);
+            return state;
+        });
 }
-
-/** A frame range `[start, end)`. The end is exclusive, as `setSegment()` takes it. */
-export type Segment = [number, number];
 
 /** The frames of a state. `+ 1` keeps the state's last frame in the segment. */
 export function stateSegment(state: IconState): Segment {
@@ -102,9 +78,6 @@ export function findState(states: IconState[], name: string): IconState | null {
         null
     );
 }
-
-/** What kind of animation a state is, from its name: `morph-select` is a `morph`. */
-export type StateType = 'in' | 'hover' | 'morph' | 'loop';
 
 const STATE_TYPES: StateType[] = ['in', 'hover', 'morph', 'loop'];
 

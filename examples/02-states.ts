@@ -5,8 +5,8 @@ import {
     stateSegment,
     stateType,
     type IconData,
-} from '../src';
-import { iconPicker, preview, tile } from './lib';
+} from '../src/index.ts';
+import { iconPicker, preview, tile } from './lib.ts';
 
 const rows = document.getElementById('rows')!;
 

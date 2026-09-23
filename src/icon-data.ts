@@ -10,7 +10,6 @@ export interface LottieEffect {
     nm: string;
     mn: string;
     ef?: { v?: { k?: unknown } }[];
-    [key: string]: unknown;
 }
 
 export interface LottieLayer {
@@ -19,14 +18,16 @@ export interface LottieLayer {
     op: number;
     st: number;
     ef?: LottieEffect[];
-    [key: string]: unknown;
 }
 
 export interface LottieAsset {
     id: string;
+    nm?: string;
     layers?: LottieLayer[];
-    [key: string]: unknown;
 }
+
+/** A colour as Lottie keeps it: `[r, g, b]` or `[r, g, b, a]`, each 0–1. */
+export type LottieColor = [number, number, number] | [number, number, number, number];
 
 /** A Lordicon icon file (Lottie JSON), as far as these utilities read it. */
 export interface IconData {
@@ -39,7 +40,6 @@ export interface IconData {
     layers: LottieLayer[];
     assets?: LottieAsset[];
     markers?: LottieMarker[];
-    [key: string]: unknown;
 }
 
 /** True when `value` has what every Lottie file has: frame rate, in and out points, size, layers. */

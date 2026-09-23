@@ -1,36 +1,16 @@
-export { customizeIcon } from './icon';
-export * from './interfaces';
+// Types
 export {
     isIconData,
     type IconData,
     type LottieAsset,
+    type LottieColor,
     type LottieEffect,
     type LottieLayer,
     type LottieMarker,
-} from './icon-data';
-export {
-    colorsByName,
-    defaultColors,
-    extractLottieProperties,
-    hasStroke,
-    hexToRgb,
-    hexToTupleColor,
-    remapColors,
-    removeExpressions,
-    resetLottieProperties,
-    rgbToHex,
-    tupleColorToHex,
-    updateLottieProperties,
-} from './lottie';
-export {
-    formatColors,
-    parseColor,
-    parseColors,
-    parseState,
-    parseStroke,
-    resolveColor,
-    strokeName,
-} from './parsers';
+} from './icon-data.ts';
+export type { ColorMap, IconProperties, IconState, Segment, StateType, Stroke } from './types.ts';
+
+// States
 export {
     defaultState,
     findState,
@@ -40,7 +20,25 @@ export {
     stateRatio,
     stateSegment,
     stateType,
-    type Segment,
-    type StateType,
-} from './states';
-export { deepClone, get, has, isNil, isObjectLike, set } from './utils';
+} from './states.ts';
+
+// Colours
+export { fromLottieColor, resolveColor, toLottieColor } from './color.ts';
+export { colorsByName, defaultColors, formatColors, parseColors } from './palette.ts';
+
+// Stroke
+export { hasStroke, parseStroke, strokeName } from './stroke.ts';
+
+// A customised copy
+export { customizeIcon, type CustomizeOptions } from './customize/index.ts';
+export { removeExpressions } from './expressions.ts';
+
+// Controls
+export {
+    readControls,
+    resetControls,
+    updateControls,
+    type ControlValue,
+    type IconControl,
+    type IconControlType,
+} from './controls.ts';

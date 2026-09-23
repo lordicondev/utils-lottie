@@ -16,8 +16,6 @@ export default tseslint.config(
     },
     {
         rules: {
-            // Lottie data is open-shaped; keep `any` visible without failing the build.
-            '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-unused-vars': [
                 'error',
                 {

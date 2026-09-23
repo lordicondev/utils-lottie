@@ -1,5 +1,11 @@
 import lottie from '@lordicon/internal';
-import { defaultState, readStates, stateSegment, type IconData, type Segment } from '../src';
+import {
+    defaultState,
+    readStates,
+    stateSegment,
+    type IconData,
+    type Segment,
+} from '../src/index.ts';
 
 /** The icons in `examples/icons`. */
 export const ICONS = ['lock', 'hourglass', 'money-bag', 'morph-select'];

@@ -1,18 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { customizeIcon, defaultColors, extractLottieProperties, readStates } from '../src';
-import { icon } from './icons';
+import {
+    customizeIcon,
+    defaultColors,
+    readControls,
+    readStates,
+    type IconData,
+} from '../src/index.ts';
+import { icon } from './icons.ts';
 
-const stroke = (data: unknown) =>
-    extractLottieProperties(data).find((p) => p.name === 'stroke' || p.name === 'stroke-layers')
-        ?.value;
-const layerNames = (data: { layers: { nm?: string }[] }) => data.layers.map((layer) => layer.nm);
+const stroke = (data: IconData) =>
+    readControls(data).find((c) => c.name === 'stroke' || c.name === 'stroke-layers')?.value;
+const layerNames = (data: IconData) => data.layers.map((layer) => layer.nm);
 const hasExpressions = (data: unknown) => /"x":"/.test(JSON.stringify(data));
 
 describe('customizeIcon', () => {
     it('leaves the data it is given alone', () => {
         const data = icon('hourglass');
         const before = JSON.stringify(data);
-        customizeIcon(data, { colors: { primary: 'red' }, stroke: 3, state: 'loop-spin' }, 'full');
+        customizeIcon(
+            data,
+            { colors: { primary: 'red' }, stroke: 3, state: 'loop-spin' },
+            { minify: 'full' },
+        );
         expect(JSON.stringify(data)).toBe(before);
     });
 
@@ -30,7 +39,7 @@ describe('customizeIcon', () => {
 
     it('makes a state the default one and keeps the other markers whole', () => {
         const result = customizeIcon(icon('morph-select'), { state: 'in-reveal' });
-        expect(result.markers.map((marker: { cm: string }) => marker.cm)).toEqual([
+        expect(result.markers!.map((marker) => marker.cm)).toEqual([
             'default:in-reveal',
             'hover-pinch',
             'morph-select:0.5',
@@ -43,9 +52,15 @@ describe('customizeIcon', () => {
         expect(result.markers).toEqual(data.markers);
         expect([result.ip, result.op]).toEqual([data.ip, data.op]);
 
-        const minified = customizeIcon(data, { state: 'nope' }, 'full');
+        const minified = customizeIcon(data, { state: 'nope' }, { minify: 'full' });
         expect(layerNames(minified)).toEqual(layerNames(data));
         expect(minified.markers).toHaveLength(3);
+    });
+
+    it('returns the type it is given', () => {
+        const data: IconData & { meta: string } = { ...icon('lock'), meta: 'kept' };
+        const result = customizeIcon(data, { stroke: 1 });
+        expect(result.meta).toBe('kept');
     });
 
     it('ends the file one frame after the state, so its last frame plays', () => {
@@ -55,7 +70,7 @@ describe('customizeIcon', () => {
     });
 
     it('keeps only the chosen stroke with partial minify', () => {
-        const result = customizeIcon(icon('hourglass'), { stroke: 3 }, 'partial');
+        const result = customizeIcon(icon('hourglass'), { stroke: 3 }, { minify: 'partial' });
         const names = layerNames(result);
         expect(names).toContain('control');
         expect(names.some((name) => name?.startsWith('light:'))).toBe(false);
@@ -64,7 +79,11 @@ describe('customizeIcon', () => {
     });
 
     it('keeps one state, from frame 0 and without expressions, with full minify', () => {
-        const result = customizeIcon(icon('morph-select'), { state: 'morph-select' }, 'full');
+        const result = customizeIcon(
+            icon('morph-select'),
+            { state: 'morph-select' },
+            { minify: 'full' },
+        );
 
         expect(readStates(result).map((s) => [s.name, s.time, s.duration, s.params])).toEqual([
             ['morph-select', 0, 60, ['0.5']],
@@ -76,12 +95,16 @@ describe('customizeIcon', () => {
             'regular:morph-select:0.5',
             'bold:morph-select:0.5',
         ]);
-        expect(result.layers.slice(1).map((layer: { ip: number }) => layer.ip)).toEqual([0, 0, 0]);
+        expect(result.layers.slice(1).map((layer) => layer.ip)).toEqual([0, 0, 0]);
         expect(hasExpressions(result)).toBe(false);
     });
 
     it('combines state and stroke with full minify', () => {
-        const result = customizeIcon(icon('hourglass'), { state: 'loop-spin', stroke: 3 }, 'full');
+        const result = customizeIcon(
+            icon('hourglass'),
+            { state: 'loop-spin', stroke: 3 },
+            { minify: 'full' },
+        );
         expect(layerNames(result)).toEqual(['control', 'bold:loop-spin']);
         expect([result.ip, result.op]).toEqual([0, 61]);
     });

@@ -1,20 +1,20 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Properties</title>
+        <title>Controls</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="./main.css" />
-        <script type="module" src="/06-properties.ts"></script>
+        <script type="module" src="/06-controls.ts"></script>
     </head>
 
     <body>
         <p><a href="/">Examples</a></p>
-        <h1>Properties</h1>
+        <h1>Controls</h1>
         <p>
-            The low-level way in: <code>extractLottieProperties()</code> lists the effects that hold
-            colours and stroke, <code>updateLottieProperties()</code> writes them,
-            <code>resetLottieProperties()</code> puts them back.
+            The low-level way in: <code>readControls()</code> lists the effect controls that hold
+            colours and stroke, <code>updateControls()</code> writes them,
+            <code>resetControls()</code> puts them back.
         </p>
         <div class="controls">
             <button id="red">primary → red</button>
@@ -31,7 +31,7 @@
                     <th>path</th>
                 </tr>
             </thead>
-            <tbody id="properties"></tbody>
+            <tbody id="controls"></tbody>
         </table>
     </body>
 </html>

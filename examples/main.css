@@ -1,9 +1,6 @@
 :root {
     --palette-font: #3c3c3c;
     --palette-primary: #08c18a;
-    --palette-bg-1: hsl(50deg 34% 85%);
-    --palette-bg-2: hsl(100deg 34% 85%);
-    --palette-bg-3: hsl(150deg 34% 85%);
 
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -13,7 +10,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #dbdbdb;
+    background: white;
     color: var(--palette-font);
 }
 
@@ -76,7 +73,7 @@ p {
 figure {
     margin: 0;
     padding: 8px;
-    background: white;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
     text-align: center;
     font-size: 13px;

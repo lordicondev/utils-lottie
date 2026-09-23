@@ -5,8 +5,8 @@ import {
     type IconData,
     type IconProperties,
     type Stroke,
-} from '../src';
-import { download, iconPicker, preview, size } from './lib';
+} from '../src/index.ts';
+import { download, iconPicker, preview, size } from './lib.ts';
 
 const field = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const stateSelect = field<HTMLSelectElement>('state');
@@ -28,10 +28,10 @@ function build(): void {
     }
 
     const minify = (minifySelect.value || undefined) as 'partial' | 'full' | undefined;
-    result = customizeIcon(data, properties, minify);
+    result = customizeIcon(data, properties, { minify });
 
     output.textContent = [
-        `customizeIcon(data, ${JSON.stringify(properties)}${minify ? `, '${minify}'` : ''})`,
+        `customizeIcon(data, ${JSON.stringify(properties)}${minify ? `, { minify: '${minify}' }` : ''})`,
         `${size(data)} → ${size(result)}`,
         `states: ${readStates(result)
             .map((state) => (state.default ? `${state.name} (default)` : state.name))

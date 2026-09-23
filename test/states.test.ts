@@ -8,8 +8,8 @@ import {
     stateRatio,
     stateSegment,
     stateType,
-} from '../src';
-import { icon, state } from './icons';
+} from '../src/index.ts';
+import { icon, state } from './icons.ts';
 
 const morph = state('morph-select', 100, 60, ['0.5']);
 
@@ -25,8 +25,9 @@ describe('readStates', () => {
 
     it('skips markers without a name or without frames', () => {
         const states = readStates({
+            ...icon('lock'),
             markers: [
-                { tm: 0, dr: 10 },
+                { tm: 0, dr: 10 } as never,
                 { cm: 'empty', tm: 0, dr: 0 },
                 { cm: 'in-reveal', tm: 0, dr: 30 },
             ],
@@ -35,8 +36,8 @@ describe('readStates', () => {
     });
 
     it('is empty for data without markers', () => {
-        expect(readStates({})).toEqual([]);
-        expect(readStates(null)).toEqual([]);
+        expect(readStates({ ...icon('lock'), markers: undefined })).toEqual([]);
+        expect(readStates(null as never)).toEqual([]);
     });
 });
 

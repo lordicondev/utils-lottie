@@ -1,5 +1,11 @@
-import { colorsByName, defaultColors, formatColors, remapColors, resolveColor } from '../src';
-import { loadIcon, preview } from './lib';
+import {
+    colorsByName,
+    customizeIcon,
+    defaultColors,
+    formatColors,
+    resolveColor,
+} from '../src/index.ts';
+import { loadIcon, preview } from './lib.ts';
 
 // resolveColor
 const input = document.querySelector<HTMLInputElement>('#value')!;
@@ -31,7 +37,7 @@ function update(): void {
         `formatColors():        ${formatColors(byName)}`,
     ].join('\n');
 
-    preview(container, remapColors(structuredClone(data), chosen));
+    preview(container, customizeIcon(data, { colors: byName }));
 }
 
 for (const [name, hex] of Object.entries(own)) {

@@ -1,5 +1,5 @@
-import { customizeIcon, hasStroke, strokeName } from '../src';
-import { ICONS, loadIcon, preview, tile } from './lib';
+import { customizeIcon, hasStroke, strokeName } from '../src/index.ts';
+import { ICONS, loadIcon, preview, tile } from './lib.ts';
 
 const rows = document.getElementById('rows')!;
 
