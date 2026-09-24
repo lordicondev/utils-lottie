@@ -65,8 +65,8 @@ describe('customizeIcon', () => {
 
     it('ends the file one frame after the state, so its last frame plays', () => {
         const result = customizeIcon(icon('morph-select'), { state: 'in-reveal' });
-        // in-reveal is tm 0, dr 30: frames 0 to 30.
-        expect([result.ip, result.op]).toEqual([0, 31]);
+        // in-reveal is tm 0, dr 60: frames 0 to 60.
+        expect([result.ip, result.op]).toEqual([0, 61]);
     });
 
     it('keeps only the chosen stroke with partial minify', () => {
@@ -89,13 +89,8 @@ describe('customizeIcon', () => {
             ['morph-select', 0, 60, ['0.5']],
         ]);
         expect([result.ip, result.op]).toEqual([0, 61]);
-        expect(layerNames(result)).toEqual([
-            'control',
-            'light:morph-select:0.5',
-            'regular:morph-select:0.5',
-            'bold:morph-select:0.5',
-        ]);
-        expect(result.layers.slice(1).map((layer) => layer.ip)).toEqual([0, 0, 0]);
+        expect(layerNames(result)).toEqual(['control', 'morph-select:0.5']);
+        expect(result.layers.slice(1).map((layer) => layer.ip)).toEqual([0]);
         expect(hasExpressions(result)).toBe(false);
     });
 

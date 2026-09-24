@@ -82,6 +82,17 @@ describe('segments', () => {
         ]);
     });
 
+    it('starts the way back on a frame of its own, as icons are drawn', () => {
+        // morph-select:0.5 over [140, 201): the way back is keyed from 170, and many icons cut
+        // there (a layer swapped, a crack appearing), so the way there ends on 169.
+        const morphSelect = findState(readStates(icon('morph-select')), 'morph-select')!;
+        expect(splitSegment(morphSelect)).toEqual([
+            [140, 170],
+            [170, 201],
+        ]);
+        expect(stateEndFrame(morphSelect)).toBe(169);
+    });
+
     it('finds the frame a state ends on', () => {
         expect(stateEndFrame(state('in-reveal', 0, 30))).toBe(30);
         // A morph holds its second look at the end of the first half.

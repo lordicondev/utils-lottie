@@ -48,8 +48,8 @@ plays forwards and then backwards.
 import { splitSegment, stateEndFrame } from '@lordicon/utils-lottie';
 
 const morph = findState(states, 'morph-select');
-splitSegment(morph); // [[110, 140], [140, 171]]; null without a ratio
-stateEndFrame(morph); // 139: where it holds its second look; the last frame without a ratio
+splitSegment(morph); // [[140, 170], [170, 201]]; null without a ratio
+stateEndFrame(morph); // 169: where it holds its second look; the last frame without a ratio
 ```
 
 ## Colours
@@ -166,6 +166,11 @@ state is a single animation to the second look, and the way back is the same fra
 backwards; `splitSegment` returns null and `stateEndFrame` the last frame. A ratio counts only
 between 0 and 1, both excluded, and `splitSegment(state, ratio)` can impose one. Each half
 keeps at least one frame, and a single-frame state is not split.
+
+The way back starts on a frame of its own, `tm + dr * ratio`, often with a cut from the way
+there: a layer swapped, a crack appearing. The icon holds its second look on the frame before,
+and going from one half to the other takes no time. So the halves in a row play one frame less
+than the whole state: 0.98 s rather than 1 s for 60 frames at 60 fps.
 
 **Colours.** Any `#rgb` or `#rrggbb` value or CSS colour name. Colours with transparency are
 not accepted. Values that are not colours are skipped: `parseColors` leaves the pair out,
